@@ -1,0 +1,69 @@
+# 🔧 Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 🌱 Ambiente
+.env
+.env.*
+!.env.example
+
+# 📦 Builds e outputs
+dist/
+build/
+.next/
+out/
+.cache/
+.eslintcache
+turbo/
+
+# ⚛️ React / Next.js / Tailwind
+tailwind.config.js
+postcss.config.js
+
+# 🧪 Coverage de testes
+coverage/
+
+# 🐘 PostgreSQL (caso tenhas dumps locais)
+*.sql
+*.sqlite
+*.pgdata
+
+# 📷 AWS S3 temporário (se fizeres upload local antes)
+uploads/
+tmp/
+
+# 🔍 Elasticsearch (se usado localmente com volume)
+esdata/
+
+# 🔄 Redis local (volume)
+redis-data/
+
+# ⚙️ Docker
+docker-compose.override.yml
+docker-compose.local.yml
+*.pid
+*.sock
+
+# 📦 Kubernetes
+*.log
+*.tmp
+*.swp
+
+# 💻 IDEs e editores
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# 🖼️ Sistema operativo
+.DS_Store
+Thumbs.db
+
+# 🔐 Chaves e certificados (nunca subir!)
+*.pem
+*.key
+*.crt
+*.csr

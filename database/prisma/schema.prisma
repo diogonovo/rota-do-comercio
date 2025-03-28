@@ -1,0 +1,329 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Utilizador - Base para todos os tipos de utilizadores
+model Utilizador {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  nome      String
+  tipo      String // "ADMIN", "MARCA", "CLIENTE"
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  marca   Marca?
+  cliente Cliente?
+
+  @@map("utilizadores")
+}
+
+// Marca - Vendedores na plataforma
+model Marca {
+  id              Int       @id @default(autoincrement())
+  utilizadorId    Int       @unique @map("utilizador_id")
+  nome            String
+  descricao       String?   @db.Text
+  logoUrl         String?   @map("logo_url")
+  bannerUrl       String?   @map("banner_url")
+  coresTema       Json?     @map("cores_tema")
+  contacto        String?
+  morada          String?
+  codigoPostal    String?   @map("codigo_postal")
+  localidade      String?
+  nif             String?
+  nivelSubscricao String    @default("BASICO") @map("nivel_subscricao") // "BASICO", "PRO", "PREMIUM"
+  dataSubscricao  DateTime  @default(now()) @map("data_subscricao")
+  dataRenovacao   DateTime? @map("data_renovacao")
+  ativa           Boolean   @default(true)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  utilizador Utilizador  @relation(fields: [utilizadorId], references: [id], onDelete: Cascade)
+  produtos   Produto[]
+  encomendas Encomenda[]
+  subscricao Subscricao?
+  comissoes  Comissao[]
+  Pagamento  Pagamento[]
+
+  @@map("marcas")
+}
+
+// Produto - Produtos vendidos pelas marcas
+model Produto {
+  id               Int      @id @default(autoincrement())
+  marcaId          Int      @map("marca_id")
+  nome             String
+  descricao        String?  @db.Text
+  preco            Float
+  precoPromocional Float?   @map("preco_promocional")
+  stock            Int      @default(0)
+  sku              String?
+  categoria        String?
+  subcategoria     String?
+  destaque         Boolean  @default(false)
+  ativo            Boolean  @default(true)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  marca          Marca             @relation(fields: [marcaId], references: [id], onDelete: Cascade)
+  imagens        ImagemProduto[]
+  variantes      VarianteProduto[]
+  itemEncomendas ItemEncomenda[]
+  avaliacoes     Avaliacao[]
+
+  @@map("produtos")
+}
+
+// ImagemProduto - Imagens dos produtos
+model ImagemProduto {
+  id        Int      @id @default(autoincrement())
+  produtoId Int      @map("produto_id")
+  url       String
+  ordem     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relações
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+
+  @@map("imagens_produto")
+}
+
+// VarianteProduto - Variantes dos produtos (tamanho, cor, etc.)
+model VarianteProduto {
+  id             Int      @id @default(autoincrement())
+  produtoId      Int      @map("produto_id")
+  nome           String
+  valor          String
+  precoAdicional Float    @default(0) @map("preco_adicional")
+  stock          Int      @default(0)
+  sku            String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  produto        Produto         @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  itemEncomendas ItemEncomenda[]
+
+  @@map("variantes_produto")
+}
+
+// Cliente - Compradores na plataforma
+model Cliente {
+  id             Int       @id @default(autoincrement())
+  utilizadorId   Int       @unique @map("utilizador_id")
+  nome           String
+  apelido        String?
+  telefone       String?
+  dataNascimento DateTime? @map("data_nascimento")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  utilizador Utilizador  @relation(fields: [utilizadorId], references: [id], onDelete: Cascade)
+  enderecos  Endereco[]
+  encomendas Encomenda[]
+  avaliacoes Avaliacao[]
+
+  @@map("clientes")
+}
+
+// Endereco - Endereços dos clientes
+model Endereco {
+  id           Int      @id @default(autoincrement())
+  clienteId    Int      @map("cliente_id")
+  tipo         String // "ENTREGA", "FATURACAO", "AMBOS"
+  morada       String
+  codigoPostal String   @map("codigo_postal")
+  localidade   String
+  pais         String   @default("Portugal")
+  predefinido  Boolean  @default(false)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  cliente             Cliente     @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  encomendasEntrega   Encomenda[] @relation("endereco_entrega")
+  encomendasFaturacao Encomenda[] @relation("endereco_faturacao")
+
+  @@map("enderecos")
+}
+
+// Encomenda - Encomendas feitas pelos clientes
+model Encomenda {
+  id                  Int       @id @default(autoincrement())
+  clienteId           Int       @map("cliente_id")
+  marcaId             Int       @map("marca_id")
+  referencia          String    @unique
+  valorProdutos       Float     @map("valor_produtos")
+  valorEnvio          Float     @map("valor_envio")
+  valorTotal          Float     @map("valor_total")
+  estado              String // "PENDENTE", "PAGA", "PROCESSANDO", "ENVIADA", "ENTREGUE", "CANCELADA"
+  metodoPagamento     String?   @map("metodo_pagamento")
+  referenciaPagamento String?   @map("referencia_pagamento")
+  dataPagamento       DateTime? @map("data_pagamento")
+  enderecoEntregaId   Int?      @map("endereco_entrega_id")
+  enderecoFaturacaoId Int?      @map("endereco_faturacao_id")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  cliente           Cliente         @relation(fields: [clienteId], references: [id])
+  marca             Marca           @relation(fields: [marcaId], references: [id])
+  enderecoEntrega   Endereco?       @relation("endereco_entrega", fields: [enderecoEntregaId], references: [id])
+  enderecoFaturacao Endereco?       @relation("endereco_faturacao", fields: [enderecoFaturacaoId], references: [id])
+  itens             ItemEncomenda[]
+  envio             Envio?
+  pagamentos        Pagamento[]
+  comissao          Comissao?
+
+  @@map("encomendas")
+}
+
+// ItemEncomenda - Itens de uma encomenda
+model ItemEncomenda {
+  id            Int      @id @default(autoincrement())
+  encomendaId   Int      @map("encomenda_id")
+  produtoId     Int      @map("produto_id")
+  varianteId    Int?     @map("variante_id")
+  quantidade    Int
+  precoUnitario Float    @map("preco_unitario")
+  precoTotal    Float    @map("preco_total")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relações
+  encomenda Encomenda        @relation(fields: [encomendaId], references: [id], onDelete: Cascade)
+  produto   Produto          @relation(fields: [produtoId], references: [id])
+  variante  VarianteProduto? @relation(fields: [varianteId], references: [id])
+
+  @@map("itens_encomenda")
+}
+
+// Envio - Informações de envio de uma encomenda
+model Envio {
+  id                  Int       @id @default(autoincrement())
+  encomendaId         Int       @unique @map("encomenda_id")
+  transportadoraId    Int       @map("transportadora_id")
+  referencia          String?
+  estado              String // "AGUARDANDO_RECOLHA", "RECOLHIDO", "EM_TRANSITO", "ENTREGUE", "DEVOLVIDO"
+  codigoRastreio      String?   @map("codigo_rastreio")
+  urlRastreio         String?   @map("url_rastreio")
+  dataEnvio           DateTime? @map("data_envio")
+  dataEntregaEstimada DateTime? @map("data_entrega_estimada")
+  dataEntregaReal     DateTime? @map("data_entrega_real")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  encomenda      Encomenda      @relation(fields: [encomendaId], references: [id], onDelete: Cascade)
+  transportadora Transportadora @relation(fields: [transportadoraId], references: [id])
+
+  @@map("envios")
+}
+
+// Transportadora - Empresas de transporte
+model Transportadora {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  codigo    String   @unique
+  apiKey    String?  @map("api_key")
+  ativa     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  envios Envio[]
+
+  @@map("transportadoras")
+}
+
+// Subscricao - Subscrições das marcas
+model Subscricao {
+  id              Int       @id @default(autoincrement())
+  marcaId         Int       @unique @map("marca_id")
+  nivel           String // "BASICO", "PRO", "PREMIUM"
+  valorMensal     Float     @map("valor_mensal")
+  valorAnual      Float?    @map("valor_anual")
+  periodicidade   String // "MENSAL", "ANUAL"
+  estado          String // "ATIVA", "INATIVA", "PERIODO_TESTE", "CANCELADA"
+  dataInicio      DateTime  @map("data_inicio")
+  dataFim         DateTime? @map("data_fim")
+  metodoPagamento String?   @map("metodo_pagamento")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  marca Marca @relation(fields: [marcaId], references: [id], onDelete: Cascade)
+
+  @@map("subscricoes")
+}
+
+// Pagamento - Pagamentos de encomendas e subscrições
+model Pagamento {
+  id                Int       @id @default(autoincrement())
+  marcaId           Int?      @map("marca_id")
+  encomendaId       Int?      @map("encomenda_id")
+  tipo              String // "ENCOMENDA", "SUBSCRICAO"
+  valor             Float
+  estado            String // "PENDENTE", "PROCESSADO", "FALHA", "REEMBOLSADO"
+  referenciaExterna String?   @map("referencia_externa")
+  metodo            String // "CARTAO", "PAYPAL", "MULTIBANCO", "MBWAY"
+  dataPagamento     DateTime? @map("data_pagamento")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  marca     Marca?     @relation(fields: [marcaId], references: [id])
+  encomenda Encomenda? @relation(fields: [encomendaId], references: [id])
+
+  @@map("pagamentos")
+}
+
+// Comissao - Comissões geradas por encomendas
+model Comissao {
+  id                Int       @id @default(autoincrement())
+  encomendaId       Int       @unique @map("encomenda_id")
+  marcaId           Int       @map("marca_id")
+  percentagem       Float
+  valor             Float
+  estado            String // "PENDENTE", "PROCESSADA", "FALHA"
+  dataProcessamento DateTime? @map("data_processamento")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relações
+  encomenda Encomenda @relation(fields: [encomendaId], references: [id], onDelete: Cascade)
+  marca     Marca     @relation(fields: [marcaId], references: [id])
+
+  @@map("comissoes")
+}
+
+// Avaliacao - Avaliações de produtos pelos clientes
+model Avaliacao {
+  id            Int      @id @default(autoincrement())
+  produtoId     Int      @map("produto_id")
+  clienteId     Int      @map("cliente_id")
+  classificacao Int // 1-5
+  comentario    String?  @db.Text
+  aprovada      Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relações
+  produto Produto @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("avaliacoes")
+}

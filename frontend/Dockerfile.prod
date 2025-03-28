@@ -1,0 +1,39 @@
+# Dockerfile para o frontend em produção
+FROM node:16-alpine AS builder
+
+# Definir diretório de trabalho
+WORKDIR /app
+
+# Copiar package.json e package-lock.json
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci
+
+# Copiar o código fonte
+COPY . .
+
+# Construir a aplicação
+RUN npm run build
+
+# Imagem de produção
+FROM node:16-alpine AS runner
+
+# Definir diretório de trabalho
+WORKDIR /app
+
+# Definir variáveis de ambiente
+ENV NODE_ENV=production
+
+# Copiar dependências e build da etapa anterior
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/next.config.js ./next.config.js
+
+# Expor porta
+EXPOSE 3000
+
+# Comando para iniciar a aplicação
+CMD ["npm", "start"]
