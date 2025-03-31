@@ -28,7 +28,7 @@ Rota do Comércio é um marketplace completo destinado a marcas pequenas e indep
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/rotadocomercio/marketplace.git
+   git clone https://github.com/diogonovo/rota-do-comercio
    cd marketplace
    ```
 
