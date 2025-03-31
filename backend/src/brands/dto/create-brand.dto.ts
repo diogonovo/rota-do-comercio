@@ -9,11 +9,11 @@ export enum SubscriptionLevel {
 export class CreateBrandDto {
   @IsNumber()
   @IsNotEmpty()
-  utilizadorId: number;
+  utilizadorId!: number;
 
   @IsString()
   @IsNotEmpty()
-  nome: string;
+  nome!: string;
 
   @IsString()
   @IsOptional()

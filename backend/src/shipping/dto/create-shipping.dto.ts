@@ -11,11 +11,11 @@ export enum ShippingStatus {
 export class CreateShippingDto {
   @IsNumber()
   @IsNotEmpty()
-  encomendaId: number;
+  encomendaId!: number;
 
   @IsNumber()
   @IsNotEmpty()
-  transportadoraId: number;
+  transportadoraId!: number;
 
   @IsString()
   @IsOptional()

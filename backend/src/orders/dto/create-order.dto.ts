@@ -12,23 +12,23 @@ export enum OrderStatus {
 export class CreateOrderDto {
   @IsNumber()
   @IsNotEmpty()
-  clienteId: number;
+  clienteId!: number;
 
   @IsNumber()
   @IsNotEmpty()
-  marcaId: number;
+  marcaId!: number;
 
   @IsNumber()
   @IsNotEmpty()
-  valorProdutos: number;
+  valorProdutos!: number;
 
   @IsNumber()
   @IsNotEmpty()
-  valorEnvio: number;
+  valorEnvio!: number;
 
   @IsNumber()
   @IsNotEmpty()
-  valorTotal: number;
+  valorTotal!: number;
 
   @IsEnum(OrderStatus)
   @IsOptional()

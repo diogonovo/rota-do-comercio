@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards } from '@ne
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
+import { GetBrandsDto } from './dto/get-brands.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -20,7 +21,7 @@ export class BrandsController {
   }
 
   @Get()
-  findAll(@Query() query) {
+  findAll(@Query() query: GetBrandsDto) {
     return this.brandsService.findAll(query);
   }
 
@@ -55,7 +56,7 @@ export class BrandsController {
   getFeaturedBrands() {
     return this.brandsService.getFeaturedBrands();
   }
-
+/*
   @Post(':id/analytics')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserType.ADMIN, UserType.MARCA)
@@ -70,5 +71,5 @@ export class BrandsController {
   @SubscriptionLevel('PREMIUM') // Apenas marcas com nível PREMIUM podem criar campanhas de marketing
   createMarketingCampaign(@Param('id') id: string, @Body() campaignData: any) {
     return this.brandsService.createMarketingCampaign(+id, campaignData);
-  }
+  }*/
 }

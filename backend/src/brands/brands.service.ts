@@ -1,9 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateBrandDto } from './dto/create-brand.dto';
+import { GetBrandsDto } from './dto/get-brands.dto';
+import { UpdateBrandDto } from './dto/update-brand.dto';
 
 @Injectable()
 export class BrandsService {
   constructor(private prisma: PrismaService) {}
+
+  async create(createBrandDto: CreateBrandDto) {
+    return this.prisma.marca.create({
+      data: createBrandDto,
+    });
+  }
+
+  async findAll(query: GetBrandsDto) {
+    const filters: any = {};
+
+    if (query.nome) {
+      filters.nome = {
+        contains: query.nome,
+        mode: 'insensitive',
+      };
+    }
+
+    if (query.featured !== undefined) {
+      filters.destaque = query.featured === 'true';
+    }
+
+    return this.prisma.marca.findMany({
+      where: filters,
+    });
+  }
+
+  async findOne(id: number) {
+    const brand = await this.prisma.marca.findUnique({
+      where: { id },
+    });
+
+    if (!brand) {
+      throw new Error(`Marca com ID ${id} não encontrada`);
+    }
+
+    return brand;
+  }
+
+  async update(id: number, updateBrandDto: UpdateBrandDto) {
+    return this.prisma.marca.update({
+      where: { id },
+      data: updateBrandDto,
+    });
+  }
 
   async customizeStore(id: number, customizationData: any) {
     // Verificar se a marca existe
@@ -65,7 +112,7 @@ export class BrandsService {
       },
     });
   }
-
+/*
   async getAnalytics(id: number, analyticsParams: any) {
     // Verificar se a marca existe
     const brand = await this.prisma.marca.findUnique({
@@ -172,5 +219,5 @@ export class BrandsService {
       status: 'AGENDADA',
       mensagem: 'Campanha de marketing criada com sucesso. Em um sistema real, esta campanha seria enviada através de email marketing, redes sociais, etc.',
     };
-  }
+  }*/
 }

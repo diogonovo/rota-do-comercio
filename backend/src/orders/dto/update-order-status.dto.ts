@@ -4,5 +4,5 @@ import { OrderStatus } from './create-order.dto';
 export class UpdateOrderStatusDto {
   @IsEnum(OrderStatus)
   @IsNotEmpty()
-  estado: OrderStatus;
+  estado!: OrderStatus;
 }

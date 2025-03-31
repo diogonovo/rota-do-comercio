@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards } from '@ne
 import { ShippingService } from './shipping.service';
 import { CreateShippingDto } from './dto/create-shipping.dto';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
+import { GetShippingsDto } from './dto/get-shipping.dto';
 import { CreateCarrierDto } from './dto/create-carrier.dto';
 import { UpdateCarrierDto } from './dto/update-carrier.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -23,7 +24,7 @@ export class ShippingController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAllShippings(@Query() query) {
+  findAllShippings(@Query() query:GetShippingsDto) {
     return this.shippingService.findAllShippings(query);
   }
 

@@ -4,20 +4,20 @@ import { UserType } from '../../auth/dto/register.dto';
 export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
-  password: string;
+  password!: string;
 
   @IsString()
   @IsNotEmpty()
-  nome: string;
+  nome!: string;
 
   @IsEnum(UserType)
   @IsNotEmpty()
-  tipo: UserType;
+  tipo!: UserType;
 
   @IsBoolean()
   @IsOptional()

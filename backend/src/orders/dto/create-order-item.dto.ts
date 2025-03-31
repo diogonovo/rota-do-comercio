@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 export class CreateOrderItemDto {
   @IsNumber()
   @IsNotEmpty()
-  produtoId: number;
+  produtoId!: number;
 
   @IsNumber()
   @IsOptional()
@@ -11,5 +11,5 @@ export class CreateOrderItemDto {
 
   @IsNumber()
   @IsNotEmpty()
-  quantidade: number;
+  quantidade!: number;
 }

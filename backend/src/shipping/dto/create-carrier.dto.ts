@@ -3,11 +3,11 @@ import { IsNotEmpty, IsString, IsOptional, IsBoolean } from 'class-validator';
 export class CreateCarrierDto {
   @IsString()
   @IsNotEmpty()
-  nome: string;
+  nome!: string;
 
   @IsString()
   @IsNotEmpty()
-  codigo: string;
+  codigo!: string;
 
   @IsString()
   @IsOptional()
