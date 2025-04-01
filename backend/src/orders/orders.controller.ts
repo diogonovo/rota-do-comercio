@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
+import { OrdersServiceExtension } from './orders.service-extension';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
+import { GetOrdersDto } from './dto/get-orders.dto';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+import { ExportOrdersDto } from './dto/export-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -12,7 +15,10 @@ import { SubscriptionLevel } from '../auth/decorators/subscription-level.decorat
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService,
+              private readonly ordersServiceExt: OrdersServiceExtension
+  ) {}
+  
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -22,7 +28,7 @@ export class OrdersController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@Query() query) {
+  findAll(@Query() query: GetOrdersDto) {
     return this.ordersService.findAll(query);
   }
 
@@ -72,7 +78,7 @@ export class OrdersController {
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PRO') // Apenas marcas com nível PRO ou superior podem acessar analytics avançados
   getOrderAnalytics(@Param('brandId') brandId: string, @Query() query) {
-    return this.ordersService.getOrderAnalytics(+brandId, query);
+    return this.ordersServiceExt.getOrderAnalytics(+brandId, query);
   }
 
   @Post(':id/bulk-update')
@@ -80,14 +86,14 @@ export class OrdersController {
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PREMIUM') // Apenas marcas com nível PREMIUM podem fazer atualizações em massa
   bulkUpdateOrders(@Body() bulkUpdateData: any) {
-    return this.ordersService.bulkUpdateOrders(bulkUpdateData);
+    return this.ordersServiceExt.bulkUpdateOrders(bulkUpdateData);
   }
 
   @Get('export/brand/:brandId')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PRO') // Apenas marcas com nível PRO ou superior podem exportar dados
-  exportOrders(@Param('brandId') brandId: string, @Query() query) {
-    return this.ordersService.exportOrders(+brandId, query);
+  exportOrders(@Param('brandId') brandId: string, @Query() query:ExportOrdersDto) {
+    return this.ordersServiceExt.exportOrders(+brandId, query);
   }
 }
