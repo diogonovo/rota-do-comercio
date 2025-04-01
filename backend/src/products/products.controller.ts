@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
+import { ProductsServiceExt } from './products.service-extension';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CreateProductImageDto } from './dto/create-product-image.dto';
@@ -12,7 +13,9 @@ import { SubscriptionLevel } from '../auth/decorators/subscription-level.decorat
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService,
+    private readonly productsServiceExt: ProductsServiceExt
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -65,21 +68,21 @@ export class ProductsController {
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PRO') // Apenas marcas com nível PRO ou superior podem destacar produtos
   highlightProduct(@Param('id') id: string) {
-    return this.productsService.highlightProduct(+id);
+    return this.productsServiceExt.highlightProduct(+id);
   }
-
+/*
   @Get('brand/:brandId')
   findByBrand(@Param('brandId') brandId: string, @Query() query) {
-    return this.productsService.findByBrand(+brandId, query);
-  }
+    return this.productsServiceExt.findByBrand(+brandId, query);
+  }*/
 
   @Get('featured')
   findFeatured() {
-    return this.productsService.findFeatured();
+    return this.productsServiceExt.findFeatured();
   }
-
+/*
   @Get('category/:category')
   findByCategory(@Param('category') category: string, @Query() query) {
-    return this.productsService.findByCategory(category, query);
-  }
+    return this.productsServiceExt.findByCategory(category, query);
+  }*/
 }

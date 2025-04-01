@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class ShippingService {
+export class ShippingServiceExt {
   constructor(private prisma: PrismaService) {}
 
   async bulkCreateShippings(bulkCreateData: any) {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
-export class OrdersServiceExtension {
+export class OrdersServiceExt {
   constructor(private prisma: PrismaService) {}
 
   async getOrderAnalytics(brandId: number, query: any) {
@@ -184,7 +184,11 @@ export class OrdersServiceExtension {
             id: true,
             nome: true,
             apelido: true,
-            email: true,
+            utilizador: {
+              select: {
+                email: true,
+              },
+            },
             telefone: true,
           },
         },
@@ -214,7 +218,7 @@ export class OrdersServiceExtension {
         data: order.createdAt,
         estado: order.estado,
         cliente: `${order.cliente.nome} ${order.cliente.apelido}`,
-        email: order.cliente.email,
+        email: order.cliente.utilizador.email,
         telefone: order.cliente.telefone,
         valorProdutos: order.valorProdutos,
         valorEnvio: order.valorEnvio,

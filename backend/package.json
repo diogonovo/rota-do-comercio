@@ -7,7 +7,9 @@
     "start": "node dist/main.js",
     "build": "nest build",
     "dev": "nest start --watch",
-    "prod": "node dist/main.js"
+    "prod": "node dist/main.js",
+    "postinstall": "prisma generate",
+    "generate": "prisma generate --schema=../database/prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -23,9 +25,9 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.12",
     "@nestjs/typeorm": "^11.0.0",
-    "@prisma/client": "^6.5.0",
+    "@prisma/client": "^5.22.0",
     "apollo-server-express": "^3.13.0",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "graphql": "^16.10.0",
@@ -34,12 +36,11 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.14.1",
-    "prisma": "^6.5.0",
+    "prisma": "^5.22.0",
     "typeorm": "^0.3.21"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.5",
-    "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.1",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",

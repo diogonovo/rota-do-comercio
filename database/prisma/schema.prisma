@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../../backend/node_modules/.prisma/client"
 }
 
 datasource db {
@@ -37,6 +38,10 @@ model Marca {
   logoUrl         String?   @map("logo_url")
   bannerUrl       String?   @map("banner_url")
   coresTema       Json?     @map("cores_tema")
+  corPrimaria     String?   @map("cor_primaria")
+  corSecundaria   String?   @map("cor_secundaria")
+  destaque        Boolean?  @default(false)
+  descricaoLoja   String?   @map("descricao_loja")
   contacto        String?
   morada          String?
   codigoPostal    String?   @map("codigo_postal")
@@ -146,6 +151,9 @@ model Endereco {
   clienteId    Int      @map("cliente_id")
   tipo         String // "ENTREGA", "FATURACAO", "AMBOS"
   morada       String
+  cidade  String   @default("Desconhecida")
+  numero  String   @default("s/n")
+  rua     String   @default("sem rua")
   codigoPostal String   @map("codigo_postal")
   localidade   String
   pais         String   @default("Portugal")

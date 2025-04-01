@@ -1,6 +1,6 @@
 import { IsOptional, IsDateString } from 'class-validator';
 
-export class GetOrderAnalyticsQueryDto {
+export class GetOrderAnalyticsDto {
   @IsOptional()
   @IsDateString()
   startDate?: string;

@@ -66,11 +66,12 @@ export class BrandsService {
     return this.prisma.marca.update({
       where: { id },
       data: {
-        corPrimaria: customizationData.corPrimaria,
-        corSecundaria: customizationData.corSecundaria,
+        coresTema: {
+          corPrimaria: customizationData.corPrimaria,
+          corSecundaria: customizationData.corSecundaria
+        },
         bannerUrl: customizationData.bannerUrl,
-        descricaoLoja: customizationData.descricaoLoja,
-        temaLoja: customizationData.temaLoja,
+        descricaoLoja: customizationData.descricaoLoja
       },
     });
   }
@@ -107,8 +108,7 @@ export class BrandsService {
         logoUrl: true,
         bannerUrl: true,
         descricaoLoja: true,
-        corPrimaria: true,
-        corSecundaria: true,
+        coresTema: true
       },
     });
   }

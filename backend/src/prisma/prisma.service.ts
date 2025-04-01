@@ -27,11 +27,11 @@ export class PrismaService extends PrismaClient {
     }
     
     // Limpar todas as tabelas para testes
-    const models = Reflect.ownKeys(this).filter(key => {
-      return typeof key === 'string' && 
-             !key.startsWith('_') && 
-             !['$connect', '$disconnect', '$on', '$transaction', '$use'].includes(key);
-    });
+    const models = Object.keys(this).filter(key =>
+      !key.startsWith('_') &&
+      !['$connect', '$disconnect', '$on', '$transaction', '$use'].includes(key)
+    );
+    
 
     return await this.$transaction(
       models.map(modelKey => {

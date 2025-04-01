@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, Delete } from '@nestjs/common';
 import { ShippingService } from './shipping.service';
+import { ShippingServiceExt } from './shipping.service-extension';
 import { CreateShippingDto } from './dto/create-shipping.dto';
 import { UpdateShippingDto } from './dto/update-shipping.dto';
 import { GetShippingsDto } from './dto/get-shipping.dto';
@@ -13,7 +14,9 @@ import { SubscriptionLevel } from '../auth/decorators/subscription-level.decorat
 
 @Controller('shipping')
 export class ShippingController {
-  constructor(private readonly shippingService: ShippingService) {}
+  constructor(private readonly shippingService: ShippingService,
+    private readonly shippingServiceExt: ShippingServiceExt
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -91,13 +94,13 @@ export class ShippingController {
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PREMIUM') // Apenas marcas com nível PREMIUM podem criar envios em massa
   bulkCreateShippings(@Body() bulkCreateData: any) {
-    return this.shippingService.bulkCreateShippings(bulkCreateData);
+    return this.shippingServiceExt.bulkCreateShippings(bulkCreateData);
   }
 
   @Get('tracking/:code')
   @UseGuards(JwtAuthGuard)
   trackShipment(@Param('code') code: string) {
-    return this.shippingService.trackShipment(code);
+    return this.shippingServiceExt.trackShipment(code);
   }
 
   @Get('analytics/brand/:brandId')
@@ -105,7 +108,7 @@ export class ShippingController {
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PRO') // Apenas marcas com nível PRO ou superior podem acessar analytics de envio
   getShippingAnalytics(@Param('brandId') brandId: string, @Query() query) {
-    return this.shippingService.getShippingAnalytics(+brandId, query);
+    return this.shippingServiceExt.getShippingAnalytics(+brandId, query);
   }
 
   @Post('custom-rates')
@@ -113,6 +116,6 @@ export class ShippingController {
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PREMIUM') // Apenas marcas com nível PREMIUM podem configurar taxas personalizadas
   setCustomShippingRates(@Body() customRatesData: any) {
-    return this.shippingService.setCustomShippingRates(customRatesData);
+    return this.shippingServiceExt.setCustomShippingRates(customRatesData);
   }
 }

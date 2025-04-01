@@ -1,12 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, Delete } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { OrdersServiceExtension } from './orders.service-extension';
+import { OrdersServiceExt } from './orders.service-extension';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { GetOrdersDto } from './dto/get-orders.dto';
 import { CreateOrderItemDto } from './dto/create-order-item.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { ExportOrdersDto } from './dto/export-order.dto';
+import { GetOrderAnalyticsDto } from './dto/get-orders-analytics.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -16,7 +17,7 @@ import { SubscriptionLevel } from '../auth/decorators/subscription-level.decorat
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService,
-              private readonly ordersServiceExt: OrdersServiceExtension
+              private readonly ordersServiceExt: OrdersServiceExt
   ) {}
   
 
@@ -77,7 +78,7 @@ export class OrdersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserType.ADMIN, UserType.MARCA)
   @SubscriptionLevel('PRO') // Apenas marcas com nível PRO ou superior podem acessar analytics avançados
-  getOrderAnalytics(@Param('brandId') brandId: string, @Query() query) {
+  getOrderAnalytics(@Param('brandId') brandId: string, @Query() query:GetOrderAnalyticsDto) {
     return this.ordersServiceExt.getOrderAnalytics(+brandId, query);
   }
 
