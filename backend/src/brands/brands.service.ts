@@ -66,10 +66,10 @@ export class BrandsService {
     return this.prisma.marca.update({
       where: { id },
       data: {
-        coresTema: {
+        coresTema: JSON.stringify({
           corPrimaria: customizationData.corPrimaria,
-          corSecundaria: customizationData.corSecundaria
-        },
+          corSecundaria: customizationData.corSecundaria,
+        }),
         bannerUrl: customizationData.bannerUrl,
         descricaoLoja: customizationData.descricaoLoja
       },

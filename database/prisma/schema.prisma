@@ -38,8 +38,6 @@ model Marca {
   logoUrl         String?   @map("logo_url")
   bannerUrl       String?   @map("banner_url")
   coresTema       Json?     @map("cores_tema")
-  corPrimaria     String?   @map("cor_primaria")
-  corSecundaria   String?   @map("cor_secundaria")
   destaque        Boolean?  @default(false)
   descricaoLoja   String?   @map("descricao_loja")
   contacto        String?

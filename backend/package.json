@@ -9,7 +9,9 @@
     "dev": "nest start --watch",
     "prod": "node dist/main.js",
     "postinstall": "prisma generate",
-    "generate": "prisma generate --schema=../database/prisma/schema.prisma"
+    "generate": "prisma generate --schema=../database/prisma/schema.prisma",
+    "seed": "node prisma db seed --schema=../database/prisma/seed.js",
+    "jtest": "jest"
   },
   "keywords": [],
   "author": "",
